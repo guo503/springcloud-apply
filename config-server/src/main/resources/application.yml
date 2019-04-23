@@ -1,0 +1,42 @@
+server:
+  port: 8300
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/gs-tsyj/config-center.git #配置git仓库的地址
+          username: gs-tsyj
+          password: gs503178
+          search-paths: gs-tsyj #配置git仓库下的相对地址，可以配置多个，用 , 分割
+      label:  master        #配置文件所在的分支
+      profile: dev
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://admin:123456@localhost:8000/eureka/
+  instance:
+       instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+       lease-expiration-duration-in-seconds: 30
+       lease-renewal-interval-in-seconds: 10
+       appname: ${spring.application.name}
+       prefer-ip-address: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
+#Spring Cloud Config也提供本地存储配置的方式。
+#我们只需要设置属性spring.profiles.active=native，Config Server会默认从应用的src/main/resource目录下检索配置文件。
+#也可以通过spring.cloud.config.server.native.searchLocations=file:E:/properties/属性来指定配置文件的位置。
+#虽然Spring Cloud Config提供了这样的功能，但是为了支持更好的管理内容和版本控制的功能，还是推荐使用git的方式。
